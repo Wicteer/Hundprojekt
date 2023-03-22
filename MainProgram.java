@@ -1,7 +1,6 @@
 //Victor Magnusson, vima1339
 import java.util.*;
 
-
 public class MainProgram {
    
     InputAdapter input = new InputAdapter();
@@ -19,7 +18,6 @@ public class MainProgram {
     private ArrayList<String> ownersDogs = new ArrayList<>();
     private ArrayList<Dog> ownedDogs = new ArrayList<>();
 
-
     private void generateDoglist() {
         templateNames.add("Karo");
         templateNames.add("Fido");
@@ -28,14 +26,12 @@ public class MainProgram {
         templateNames.add("Bob");
         templateNames.add("Rose");
 
-
         templateBreeds.add("Tax");
         templateBreeds.add("Golden retriever");
         templateBreeds.add("Pitbull");
         templateBreeds.add("Bulldog");
         templateBreeds.add("Terrier");
         templateBreeds.add("Husky");
-
 
         Random rnd = new Random();
         for(int i = 0; i < templateNames.size(); i++) {
@@ -45,17 +41,14 @@ public class MainProgram {
             return;
     }
 
-
     private void printCommands() {
-        System.out.println("Welcome!\n Please enter one of the following commands:\n 1.register new dog\n 2.list dogs\n 3.increase age\n 4.remove dog\n 5.register new owner\n 6.give dog\n 7.list owners\n 8.remove owned dog\n 9.remove owner\n 0.exit\n");
+        System.out.println("");
+        System.out.println("Welcome!\n Please enter one of the following commands:\n 1.register new dog\n 2.list dogs\n 3.increase age\n 4.remove dog\n 5.register new owner\n 6.give dog\n 7.list owners\n 8.remove dog from owner\n 9.remove owner\n 0.exit\n");
     }
-
 
     private void commandCentral(String command) {
 
-
         switch(command) {
-
 
             case "1":
                 registerDog();
@@ -78,24 +71,21 @@ public class MainProgram {
             case "7": //list owners
                 listOwners();
                 break;
-            case "8": //remove owned dog
+            case "8": //remove dog from owner
                 removeOwnedDog();
                 break;
             case "9": //remove owner
                 removeOwner();
                 break;
 
-
             case "0": //exit
                 System.exit(0);
                 break;
-
 
             default:
                 System.out.println("ERROR: no such command!");          
         }
     }
-
 
 private void registerDog() {
     String dogName = input.readString("Name");
@@ -152,7 +142,6 @@ private void registerDog() {
         } return null;
     }
 
-
     private void listDogs() {
         if(dogs.isEmpty()) {
             System.out.println("Error: no dogs in list");
@@ -161,7 +150,6 @@ private void registerDog() {
         double len = input.readDouble("Smallest tail length to display?");
         prntDogMinTail(len);
     }
-
 
     private void prntDogMinTail(double len) {
         for (int i = 0; i < dogs.size(); i++) {
@@ -181,7 +169,6 @@ private void registerDog() {
            
     }
 
-
     private void removeDog() {
         String dogName = input.readString("Enter the name of the dog");
         if(findDog(dogName) == null) {
@@ -192,16 +179,14 @@ private void registerDog() {
         if(dog.getOwner() != null) {
             this.owner = dog.getOwner();
             owner.removeDogFromOwner(dog);
+            dog.removeOwner();
         }
         dogs.remove(dog);
         doglist.removeDog(dog);
         System.out.println(dog.getName() + " has been removed from the register");
-
-
     }
 
-
-    private void removeOwnedDog() {
+    private void removeOwnedDog() { //remove dog from owner
         String dogName = input.readString("Enter the name of the dog");
         if(findDog(dogName) == null) {
             System.out.println("ERROR: no such dog");
@@ -217,7 +202,6 @@ private void registerDog() {
         System.out.println(dog.getName() + " is removed from " + owner);
     }
 
-
     private void removeDogs(Owner owner) {
         for(int i = 0; i < dogs.size(); i++) {  
             if(dogs.get(i).getOwner() == owner) {  
@@ -232,7 +216,6 @@ private void registerDog() {
             dogs.remove(ownedDogs.get(i));  
         }
     }
-
 
     private void increaseAge() {
         String name = input.readString("Name");
@@ -250,7 +233,6 @@ private void registerDog() {
             }
     }
 
-
     private void giveDog() {
         String dogName = input.readString("Enter the name of the dog");
             if(findDog(dogName) == null) {
@@ -259,7 +241,7 @@ private void registerDog() {
             }
                 Dog dog = findDog(dogName);
            
-            if(dog.getOwner() != null) {
+            if(dog.getOwner() != null || owner.hasDog(dog)) {
                 System.out.println("ERROR: the dog already has an owner");
                 return;
             }
@@ -276,9 +258,13 @@ private void registerDog() {
 // ---------------------------------------------------------
     private void registerOwner() {
         String name = input.readString("Name");
+        if(findOwner(name) != null) {
+            System.out.println("ERROR: Owner already in list!");
+            return;
+        }
         owners.add(new Owner(name));
+        System.out.println(name + " was added to the list!");
     }
-
 
     private Owner findOwner(String name) {
         for(int i = 0; i < owners.size(); i++) {
@@ -294,13 +280,12 @@ private void registerDog() {
             return;
         }
         prntOwners();
+        ownersDogs.clear();
     }
-
 
     private void prntOwners() {
         for(int i = 0; i < owners.size(); i++) {
             owner = owners.get(i);
-
 
             if(hasDogs(owner))
                 System.out.println(owner + extractDogs(owner));
@@ -309,23 +294,17 @@ private void registerDog() {
         }
     }
 
-
     private void removeOwner() {
         String ownerName = input.readString("Enter the name of the user");
         if(findOwner(ownerName) == null) {
             System.out.println("ERROR: no such owner");
             return;
         }
-
-
         owner = findOwner(ownerName);
-        //removeDogs(owner);
+        removeDogs(owner);
         owners.remove(owner);
         System.out.println(owner + " is removed from the register");
     }
-
-
-
 
     private boolean hasDogs(Owner owner) {
         for(int i = 0; i < dogs.size(); i++) {
@@ -334,7 +313,6 @@ private void registerDog() {
             }
         } return false;
     }
-
 
     private String extractDogs(Owner owner) {
         for(int i = 0; i < dogs.size(); i++) {
@@ -346,25 +324,21 @@ private void registerDog() {
         } return ownersDogs.toString();
     }
 
-
     private void start() {
         startUp();
         commandLoop();
         shutDown();
     }
 
-
     private void startUp() {
         generateDoglist();
     }
-
 
     private String readCommand() {
         printCommands();
         String command = input.readString("command");
         return command;
     }
-
 
     private void commandLoop() {
         String command;
@@ -374,15 +348,12 @@ private void registerDog() {
         }while(command!=EXIT_COMMAND);
     }
 
-
     private void shutDown() {
         System.exit(0);
     }
 
-
     public static void main(String[] args) {
         new MainProgram().start();
     }
-   
 }
 
